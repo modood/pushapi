@@ -1,0 +1,96 @@
+package oppopush
+
+import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/url"
+	"strconv"
+	"time"
+
+	"github.com/modood/pushapi/httputil"
+)
+
+type Client struct {
+	host              string
+	appKey            string
+	masterSecret      string
+	authToken         string
+	authTokenExpireAt int64
+}
+
+func NewClient(appKey, masterSecret string) *Client {
+	return &Client{
+		host:         Host,
+		appKey:       appKey,
+		masterSecret: masterSecret,
+	}
+}
+
+func (c *Client) SetHost(host string) {
+	c.host = host
+}
+
+func (c *Client) auth() (string, error) {
+	now := time.Now().UnixNano() / int64(time.Millisecond)
+	if c.authToken != "" && c.authTokenExpireAt > now {
+		return c.authToken, nil
+	}
+
+	timestamp := strconv.FormatInt(time.Now().UnixNano()/1e6, 10)
+	shaByte := sha256.Sum256([]byte(c.appKey + timestamp + c.masterSecret))
+	sign := hex.EncodeToString(shaByte[:])
+
+	req := &AuthReq{
+		AppKey:    c.appKey,
+		Sign:      sign,
+		Timestamp: timestamp,
+	}
+	res := &AuthRes{}
+
+	params := httputil.StructToUrlValues(req)
+	code, resBody, err := httputil.PostForm(c.host+AuthURL, params, res, nil)
+	if err != nil {
+		return "", fmt.Errorf("code=%d body=%s err=%v", code, resBody, err)
+	}
+
+	if code != http.StatusOK || res.Code != 0 || res.Data.AuthToken == "" {
+		return "", fmt.Errorf("code=%d body=%s", code, resBody)
+	}
+
+	c.authToken = res.Data.AuthToken
+	c.authTokenExpireAt = now + 60*60*1000 // 一个小时后更新
+	return c.authToken, nil
+}
+
+// Send 单推-通知栏消息推送
+func (c *Client) Send(req *SendReq) (*SendRes, error) {
+	res := &SendRes{}
+
+	token, err := c.auth()
+	if err != nil {
+		return nil, err
+	}
+
+	message, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	params := url.Values{}
+	params.Add("message", string(message))
+	params.Add("auth_token", token)
+
+	code, resBody, err := httputil.PostForm(c.host+SendURL, params, res, nil)
+	if err != nil {
+		return nil, fmt.Errorf("code=%d body=%s err=%v", code, resBody, err)
+	}
+
+	if code != http.StatusOK || res.Code != 0 {
+		return nil, fmt.Errorf("code=%d body=%s", code, resBody)
+	}
+
+	return res, nil
+}
