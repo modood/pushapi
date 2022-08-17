@@ -6,7 +6,12 @@ const (
 	Host       = "https://api.xmpush.xiaomi.com"        // 国内
 	HostGlobal = "https://api.xmpush.global.xiaomi.com" // 海外
 
-	SendURL = "/v4/message/regid"
+	HostRu   = "https://ru-api.xmpush.global.xiaomi.com"   // 机房：莫斯科，服务范围：俄罗斯
+	HostIdmb = "https://idmb-api.xmpush.global.xiaomi.com" // 机房：孟买，服务范围：印度
+	HostFr   = "https://fr-api.xmpush.global.xiaomi.com"   // 机房：法兰克福，服务范围：欧洲经济区以及英国
+	HostSgp  = "https://sgp-api.xmpush.global.xiaomi.com"  // 机房：新加坡，服务范围：以上各地区之外的其他地区
+
+	SendURL = "/v3/message/regid"
 )
 
 type SendReq struct {
@@ -48,9 +53,9 @@ type Extra struct {
 	AppVersionNotIn    string    `json:"app_version_not_in,omitempty"`  // 无法接收消息的app版本号，用逗号分割。
 	Connpt             string    `json:"connpt,omitempty"`              // 可选项，指定在特定的网络环境下才能接收到消息。目前仅支持指定”wifi”。
 	OnlySendOnce       string    `json:"only_send_once,omitempty"`      // 可选项，extra.only_send_once的值设置为1，表示该消息仅在设备在线时发送一次，不缓存离线消息进行多次下发。
-	ChannelId          string    `json:"channel_id,omitempty"`          // 通知类别的ID。
-	ChannelName        string    `json:"channel_name,omitempty"`        // 通知类别的名称。
-	ChannelDescription string    `json:"channel_description,omitempty"` // 通知类别的描述。
+	ChannelId          string    `json:"channel_id,omitempty"`          // 必填，通知类别的ID。
+	ChannelName        string    `json:"channel_name,omitempty"`        // 可选，通知类别的名称。
+	ChannelDescription string    `json:"channel_description,omitempty"` // 可选，通知类别的描述。
 }
 
 type Callback struct {
