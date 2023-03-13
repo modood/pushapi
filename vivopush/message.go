@@ -23,7 +23,7 @@ type AuthRes struct {
 }
 
 type SendReq struct {
-	AppId           string                   `json:"appId,omitempty"`           // 用户申请推送业务时生成的appId，用于与获取authToken时传递的appId校验，一致才可以推送
+	AppId           int                      `json:"appId,omitempty"`           // 用户申请推送业务时生成的appId，用于与获取authToken时传递的appId校验，一致才可以推送
 	RegId           string                   `json:"regId,omitempty"`           // 应用订阅PUSH服务器得到的id   长度23个字符（regId，alias 两者需一个不为空，当两个不为空时，取regId）
 	Alias           string                   `json:"alias,omitempty"`           // 别名 长度不超过40字符（regId，alias两者需一个不为空，当两个不为空时，取regId）
 	NotifyType      int                      `json:"notifyType,omitempty"`      // 通知类型 1:无，2:响铃，3:振动，4:响铃和振动
