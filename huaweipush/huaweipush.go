@@ -66,7 +66,7 @@ func (c *Client) Send(req *SendReq) (*SendRes, error) {
 
 	code, resBody, err := httputil.PostJSON(c.sendURL, req, res, map[string]string{"Authorization": token})
 	if err != nil {
-		return nil, fmt.Errorf("code=%d body=%s err=%c", code, resBody, err)
+		return nil, fmt.Errorf("code=%d body=%s err=%v", code, resBody, err)
 	}
 
 	if code != http.StatusOK || res.Code != CodeSuccess {
