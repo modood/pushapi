@@ -1,6 +1,8 @@
 package httputil_test
 
 import (
+	"context"
+	"net/http"
 	"testing"
 
 	"github.com/modood/pushapi/httputil"
@@ -63,9 +65,9 @@ func TestStructToUrlValues(t *testing.T) {
 }
 
 func TestPostJSON(t *testing.T) {
-	_, _, _ = httputil.PostJSON("https://ipinfo.io/", &struct{}{}, &struct{}{}, nil)
+	_, _, _ = httputil.PostJSON(context.Background(), &http.Client{}, "https://ipinfo.io/", &struct{}{}, &struct{}{}, nil)
 }
 
 func TestPostForm(t *testing.T) {
-	_, _, _ = httputil.PostForm("https://ipinfo.io/", nil, &struct{}{}, nil)
+	_, _, _ = httputil.PostForm(context.Background(), &http.Client{}, "https://ipinfo.io/", nil, &struct{}{}, nil)
 }

@@ -1,6 +1,7 @@
 package huaweipush
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -9,6 +10,7 @@ import (
 )
 
 type Client struct {
+	httpClient        *http.Client
 	appId             string
 	appSecret         string
 	authToken         string
@@ -28,7 +30,11 @@ func (c *Client) SetHost(host string) {
 	c.sendURL = fmt.Sprintf(host+SendURL, c.appId)
 }
 
-func (c *Client) auth() (string, error) {
+func (c *Client) SetHTTPClient(client *http.Client) {
+	c.httpClient = client
+}
+
+func (c *Client) auth(ctx context.Context) (string, error) {
 	now := time.Now().UnixNano() / int64(time.Millisecond)
 	if c.authToken != "" && c.authTokenExpireAt > now {
 		return c.authToken, nil
@@ -42,7 +48,7 @@ func (c *Client) auth() (string, error) {
 	res := &AuthRes{}
 
 	params := httputil.StructToUrlValues(req)
-	code, resBody, err := httputil.PostForm(AuthURL, params, res, nil)
+	code, resBody, err := httputil.PostForm(ctx, c.httpClient, AuthURL, params, res, nil)
 	if err != nil {
 		return "", fmt.Errorf("code=%d body=%s err=%v", code, resBody, err)
 	}
@@ -57,14 +63,18 @@ func (c *Client) auth() (string, error) {
 }
 
 func (c *Client) Send(req *SendReq) (*SendRes, error) {
+	return c.SendWithContext(context.Background(), req)
+}
+
+func (c *Client) SendWithContext(ctx context.Context, req *SendReq) (*SendRes, error) {
 	res := &SendRes{}
 
-	token, err := c.auth()
+	token, err := c.auth(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	code, resBody, err := httputil.PostJSON(c.sendURL, req, res, map[string]string{"Authorization": token})
+	code, resBody, err := httputil.PostJSON(ctx, c.httpClient, c.sendURL, req, res, map[string]string{"Authorization": token})
 	if err != nil {
 		return nil, fmt.Errorf("code=%d body=%s err=%v", code, resBody, err)
 	}

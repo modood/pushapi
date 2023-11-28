@@ -2,6 +2,7 @@ package httputil
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -12,12 +13,12 @@ import (
 	"strings"
 )
 
-func PostJSON(url string, req, res interface{}, headers map[string]string) (code int, body string, err error) {
+func PostJSON(ctx context.Context, client *http.Client, url string, req, res interface{}, headers map[string]string) (code int, body string, err error) {
 	reqBody, err := json.Marshal(req)
 	if err != nil {
 		return 0, "", err
 	}
-	request, err := http.NewRequest("POST", url, bytes.NewReader(reqBody))
+	request, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(reqBody))
 	if err != nil {
 		return 0, "", err
 	}
@@ -26,7 +27,9 @@ func PostJSON(url string, req, res interface{}, headers map[string]string) (code
 		request.Header.Add(k, v)
 	}
 
-	client := &http.Client{}
+	if client == nil {
+		client = &http.Client{}
+	}
 	response, err := client.Do(request)
 	if err != nil {
 		return 0, "", err
@@ -44,9 +47,9 @@ func PostJSON(url string, req, res interface{}, headers map[string]string) (code
 	return response.StatusCode, string(resBody), nil
 }
 
-func PostForm(url string, req url.Values, res interface{}, headers map[string]string) (code int, body string, err error) {
+func PostForm(ctx context.Context, client *http.Client, url string, req url.Values, res interface{}, headers map[string]string) (code int, body string, err error) {
 	reqBody := req.Encode()
-	request, err := http.NewRequest("POST", url, strings.NewReader(reqBody))
+	request, err := http.NewRequestWithContext(ctx, "POST", url, strings.NewReader(reqBody))
 	if err != nil {
 		return 0, "", err
 	}
@@ -55,7 +58,9 @@ func PostForm(url string, req url.Values, res interface{}, headers map[string]st
 		request.Header.Add(k, v)
 	}
 
-	client := &http.Client{}
+	if client == nil {
+		client = &http.Client{}
+	}
 	response, err := client.Do(request)
 	if err != nil {
 		return 0, "", err
