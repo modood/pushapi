@@ -1,15 +1,26 @@
 # pushapi
 
-[![Build Status](https://travis-ci.org/modood/pushapi.png)](https://travis-ci.org/modood/pushapi)
+各手机厂商推送 api 接入
+
 [![Coverage Status](https://coveralls.io/repos/github/modood/pushapi/badge.svg?branch=master)](https://coveralls.io/github/modood/pushapi?branch=master)
 [![GoDoc](https://pkg.go.dev/badge/github.com/modood/pushapi)](https://pkg.go.dev/github.com/modood/pushapi)
 
-各手机厂商推送 api 接入
 
-*   vivo （最后更新时间：2023-03-13 17:20:37）
-*   oppo （最后更新时间：2021-04-21 16:03:09）
-*   小米 （最后更新时间：2022-08-02 10:00:00）
-*   华为 （最后更新时间：2021-04-21 10:51:00）
+vivo（更新日期：2024-03-21）：
+
+*   <https://dev.vivo.com.cn/documentCenter/doc/362>
+
+oppo （更新日期：2024-04-25） ：
+
+*   <https://open.oppomobile.com/new/developmentDoc/info?id=11236>
+
+小米 （更新日期：2024-04-25）：
+
+*   <https://dev.mi.com/distribute/doc/details?pId=1559>
+
+华为 （更新日期：2024-03-05）：
+
+*   <https://developer.huawei.com/consumer/cn/doc/HMSCore-References/https-send-api-0000001050986197>
 
 ## 调用示例
 
