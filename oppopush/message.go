@@ -51,6 +51,8 @@ type Notification struct {
 	ShowTtl             int         `json:"show_ttl,omitempty"`              // 限时展示时间(单位：秒)。消息在通知栏展示后开始计时，展示时长超过展示事件后，消息会从通知栏中消失。限时展示的时间范围：公信0-12小时，私信0-24小时。
 	NotifyId            int         `json:"notify_id,omitempty"`             // 每条消息在通知显示时的唯一标识，主要用于新旧消息的覆盖。不设置本参数时，PUSH自动为给每条消息生成一个唯一标识；当不同的消息设置为同一个notify_id，到达设备的新消息将覆盖旧消息展示在设备通知栏中。
 	AuditResponse       interface{} `json:"auditResponse,omitempty"`         // 推必安信息审核api响应内容，详见《基于第三方审核结果的消息推送》 https://open.oppomobile.com/new/developmentDoc/info?id=11344
+	Category            string      `json:"category,omitempty"`              // 通道类别名，详见《新消息分类场景说明》https://open.oppomobile.com/new/developmentDoc/info?id=13189
+	NotifyLevel         int         `json:"notify_level,omitempty"`          // 通知栏消息提醒等级取值定义 1-通知栏 2-通知栏+锁屏 16-通知栏+锁屏+横幅+震动+铃声 使用notify_level参数时，category参数必传
 }
 
 type SendRes struct {
